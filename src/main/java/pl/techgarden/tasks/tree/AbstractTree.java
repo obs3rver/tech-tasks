@@ -1,20 +1,31 @@
 package pl.techgarden.tasks.tree;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import pl.techgarden.tasks.tree.domain.Age;
+import pl.techgarden.tasks.tree.domain.Age.Period;
 import pl.techgarden.tasks.tree.domain.Location;
 import pl.techgarden.tasks.tree.domain.Name;
+import pl.techgarden.tasks.tree.growth.Length;
+import pl.techgarden.tasks.tree.growth.TreeGrowthConfig;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 
-import java.time.Period;
-
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 abstract class AbstractTree implements Tree {
     private final Name name;
     private final Location location;
+    private final TreeGrowthConfig<Length> treeGrowthConfig;
+
+    private final Root mainRoot;
 
     private Age age = Age.ZERO;
     private TreeGrowthInfo treeGrowthInfo = TreeGrowthInfo.EMPTY;
+
+    AbstractTree(Name name, Location location, TreeGrowthConfig<Length> treeGrowthConfig) {
+        this.name = name;
+        this.location = location;
+        this.treeGrowthConfig = treeGrowthConfig;
+
+        this.mainRoot = Root.of(treeGrowthConfig.rootsGrowthConfig());
+    }
 
     @Override
     public Age age() {
@@ -38,15 +49,15 @@ abstract class AbstractTree implements Tree {
 
     @Override
     public TreeGrowthInfo growFor(Period timePeriod) {
-        //template method
         age = increaseAge(timePeriod);
-
-        return prepareTreeGrowthInfo(age);
+        TreePartGrowthInfo rootsGrowthInfo = mainRoot.growFor(timePeriod);
+        return prepareTreeGrowthInfo(age, rootsGrowthInfo);
     }
 
-    private TreeGrowthInfo prepareTreeGrowthInfo(Age updatedAge) {
+    private TreeGrowthInfo prepareTreeGrowthInfo(Age updatedAge, TreePartGrowthInfo rootsGrowthInfo) {
         treeGrowthInfo = TreeGrowthInfo.builder()
                 .age(updatedAge)
+                .rootsInfo(rootsGrowthInfo)
                 .build();
 
         return treeGrowthInfo;

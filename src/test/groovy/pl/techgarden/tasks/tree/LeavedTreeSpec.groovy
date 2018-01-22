@@ -3,7 +3,13 @@ package pl.techgarden.tasks.tree
 import pl.techgarden.tasks.tree.domain.Age
 import pl.techgarden.tasks.tree.factory.TreeFactory
 import pl.techgarden.tasks.tree.factory.TreeFactoryProducer
+import pl.techgarden.tasks.tree.growth.Length
+import pl.techgarden.tasks.tree.growth.LengthTreeGrowthConfig
+import pl.techgarden.tasks.tree.growth.TreeGrowthConfig
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo
 import spock.lang.Specification
+
+import static pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo
 
 class LeavedTreeSpec extends Specification implements TreeData {
 
@@ -12,6 +18,7 @@ class LeavedTreeSpec extends Specification implements TreeData {
         Tree leavedTree = LeavedTree.builder()
                 .name(LEAVED_TREE_NAME)
                 .location(LOCATION)
+                .treeGrowthConfig(aDefaultTreeGrowthConfig())
                 .build()
 
         then:
@@ -34,8 +41,34 @@ class LeavedTreeSpec extends Specification implements TreeData {
         when: 'grow procedure was started for 1 year'
         TreeGrowthInfo growthInfo = leavedTree.growFor(ONE_YEAR_PERIOD)
 
-        then: 'growth statistics should get updated'
+        then: 'growth statistics for age should get updated'
         leavedTree.growthInfo().age == Age.ONE_YEAR
         growthInfo.age == Age.ONE_YEAR
+    }
+
+    def "LeavedTree should be able to grow its roots"() {
+        given: 'LeavedTreeFactory instance'
+        TreeFactory leavedTreeFactory = TreeFactoryProducer.leavedTreeFactory()
+
+        and: 'a leaved tree instance'
+        Tree leavedTree = leavedTreeFactory.createTree(LEAVED_TREE_NAME, LOCATION)
+
+        when: 'grow procedure was started for 1 year'
+        TreeGrowthInfo growthInfo = leavedTree.growFor(ONE_YEAR_PERIOD)
+
+        then: 'growth statistics for mainRoot should get updated'
+        leavedTree.growthInfo().rootsInfo == expectedRootsGrowthInfo()
+        growthInfo.rootsInfo == expectedRootsGrowthInfo()
+    }
+
+    private static TreePartGrowthInfo expectedRootsGrowthInfo() {
+        TreePartGrowthInfo.builder()
+                .treePartCounter(2)
+                .traitSum(Length.of(1.0))
+                .build()
+    }
+
+    private static TreeGrowthConfig<Length> aDefaultTreeGrowthConfig() {
+        LengthTreeGrowthConfig.builder().build()
     }
 }
