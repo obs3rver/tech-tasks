@@ -23,6 +23,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<gmaven-plugin.version>1.5</gmaven-plugin.version>
 		<groovy.version>2.4.13</groovy.version>
+		<spock.version>1.1-groovy-2.4</spock.version>
 		<java.version>1.8</java.version>
 	</properties>
 
@@ -54,20 +55,19 @@
 		<dependency>
 			<groupId>org.spockframework</groupId>
 			<artifactId>spock-core</artifactId>
-			<version>1.1-groovy-2.4</version>
+			<version>${spock.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.spockframework</groupId>
 			<artifactId>spock-spring</artifactId>
-			<version>1.1-groovy-2.4</version>
+			<version>${spock.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
 			<version>${groovy.version}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -78,39 +78,19 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.gmaven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<version>${gmaven-plugin.version}</version>
-				<configuration>
-					<providerSelection>2.0</providerSelection>
-					<source/>
-				</configuration>
+				<groupId>org.codehaus.gmavenplus</groupId>
+				<artifactId>gmavenplus-plugin</artifactId>
+				<version>1.6</version>
 				<executions>
 					<execution>
 						<goals>
+							<goal>addSources</goal>
+							<goal>addTestSources</goal>
 							<goal>compile</goal>
-							<goal>testCompile</goal>
+							<goal>compileTests</goal>
 						</goals>
 					</execution>
 				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.gmaven.runtime</groupId>
-						<artifactId>gmaven-runtime-2.0</artifactId>
-						<version>${gmaven-plugin.version}</version>
-						<exclusions>
-							<exclusion>
-								<groupId>org.codehaus.groovy</groupId>
-								<artifactId>groovy-all</artifactId>
-							</exclusion>
-						</exclusions>
-					</dependency>
-					<dependency>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-all</artifactId>
-						<version>${groovy.version}</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
