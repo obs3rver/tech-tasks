@@ -16,6 +16,7 @@ public class TreeGrowthInfo {
     Age age;
 
     TreePartGrowthInfo<Length> rootsInfo;
+    TreePartGrowthInfo<Length> stemsInfo;
 
     public static TreeGrowthInfo EMPTY =
             TreeGrowthInfo.builder()

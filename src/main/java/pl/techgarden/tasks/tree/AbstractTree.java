@@ -15,6 +15,7 @@ abstract class AbstractTree implements Tree {
     private final TreeGrowthConfig<Length> treeGrowthConfig;
 
     private final Root mainRoot;
+    private final Stem mainStem;
 
     private Age age = Age.ZERO;
     private TreeGrowthInfo treeGrowthInfo = TreeGrowthInfo.EMPTY;
@@ -25,6 +26,7 @@ abstract class AbstractTree implements Tree {
         this.treeGrowthConfig = treeGrowthConfig;
 
         this.mainRoot = Root.of(treeGrowthConfig.rootsGrowthConfig());
+        this.mainStem = Stem.of(treeGrowthConfig.stemsGrowthConfig());
     }
 
     @Override
@@ -50,14 +52,25 @@ abstract class AbstractTree implements Tree {
     @Override
     public TreeGrowthInfo growFor(Period timePeriod) {
         age = increaseAge(timePeriod);
-        TreePartGrowthInfo rootsGrowthInfo = mainRoot.growFor(timePeriod);
-        return prepareTreeGrowthInfo(age, rootsGrowthInfo);
+        TreePartGrowthInfo<Length> rootsGrowthInfo = mainRoot.growFor(timePeriod);
+        TreePartGrowthInfo<Length> stemsGrowthInfo = mainStem.growFor(timePeriod);
+
+        return prepareTreeGrowthInfo(
+                age,
+                rootsGrowthInfo,
+                stemsGrowthInfo
+        );
     }
 
-    private TreeGrowthInfo prepareTreeGrowthInfo(Age updatedAge, TreePartGrowthInfo rootsGrowthInfo) {
+    private TreeGrowthInfo prepareTreeGrowthInfo(
+            Age updatedAge,
+            TreePartGrowthInfo<Length> rootsGrowthInfo,
+            TreePartGrowthInfo<Length> stemsGrowthInfo
+    ) {
         treeGrowthInfo = TreeGrowthInfo.builder()
                 .age(updatedAge)
                 .rootsInfo(rootsGrowthInfo)
+                .stemsInfo(stemsGrowthInfo)
                 .build();
 
         return treeGrowthInfo;

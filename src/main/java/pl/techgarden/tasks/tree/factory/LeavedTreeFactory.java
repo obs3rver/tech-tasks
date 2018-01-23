@@ -25,6 +25,16 @@ public class LeavedTreeFactory implements TreeFactory {
     private static TreeGrowthConfig<Length> aLeavedTreeGrowthConfig() {
         return LengthTreeGrowthConfig.builder()
                 .rootsGrowthConfig(aMainRootNodeGrowthConfig())
+                .stemsGrowthConfig(aMainStemNodeGrowthConfig())
+                .build();
+    }
+
+    private static TreePartGrowthConfig<Length> aMainStemNodeGrowthConfig() {
+        return LengthTreeGrowthConfig.LengthTreePartGrowthConfig.builder()
+                .increaseCountOfTreePartBy(1)
+                .increaseCountOfTreePartEvery(ONE_YEAR_PERIOD)
+                .depthCount(1)
+                .growthStrategy(length -> length.plus(Length.of(1.0)))
                 .build();
     }
 

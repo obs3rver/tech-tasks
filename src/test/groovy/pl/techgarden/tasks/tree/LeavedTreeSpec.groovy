@@ -56,15 +56,37 @@ class LeavedTreeSpec extends Specification implements TreeData {
         when: 'grow procedure was started for 1 year'
         TreeGrowthInfo growthInfo = leavedTree.growFor(ONE_YEAR_PERIOD)
 
-        then: 'growth statistics for mainRoot should get updated'
+        then: 'growth statistics for roots should get updated'
         leavedTree.growthInfo().rootsInfo == expectedRootsGrowthInfo()
         growthInfo.rootsInfo == expectedRootsGrowthInfo()
+    }
+
+    def "LeavedTree should be able to grow its stems"() {
+        given: 'LeavedTreeFactory instance'
+        TreeFactory leavedTreeFactory = TreeFactoryProducer.leavedTreeFactory()
+
+        and: 'a leaved tree instance'
+        Tree leavedTree = leavedTreeFactory.createTree(LEAVED_TREE_NAME, LOCATION)
+
+        when: 'grow procedure was started for 1 year'
+        TreeGrowthInfo growthInfo = leavedTree.growFor(ONE_YEAR_PERIOD)
+
+        then: 'growth statistics for stems should get updated'
+        leavedTree.growthInfo().stemsInfo == expectedStemsGrowthInfo()
+        growthInfo.stemsInfo == expectedStemsGrowthInfo()
     }
 
     private static TreePartGrowthInfo expectedRootsGrowthInfo() {
         TreePartGrowthInfo.builder()
                 .treePartCounter(2)
                 .traitSum(Length.of(1.0))
+                .build()
+    }
+
+    private static TreePartGrowthInfo expectedStemsGrowthInfo() {
+        TreePartGrowthInfo.builder()
+                .treePartCounter(2)
+                .traitSum(Length.of(2.0))
                 .build()
     }
 
