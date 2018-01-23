@@ -7,6 +7,8 @@ import pl.techgarden.tasks.tree.domain.Name;
 import pl.techgarden.tasks.tree.growth.Length;
 import pl.techgarden.tasks.tree.growth.TreeGrowthConfig;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.RootGrowthInfo;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.StemGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 
 abstract class AbstractTree implements Tree {
@@ -18,7 +20,6 @@ abstract class AbstractTree implements Tree {
     private final Stem mainStem;
 
     private Age age = Age.ZERO;
-    private TreeGrowthInfo treeGrowthInfo = TreeGrowthInfo.EMPTY;
 
     AbstractTree(Name name, Location location, TreeGrowthConfig<Length> treeGrowthConfig) {
         this.name = name;
@@ -45,35 +46,35 @@ abstract class AbstractTree implements Tree {
     }
 
     @Override
-    public TreeGrowthInfo growthInfo() {
-        return treeGrowthInfo;
+    public TreeGrowthInfo collectGrowthInfo() {
+        final TreePartGrowthInfo rootsInfo = collectRootsGrowthInfo();
+        final TreePartGrowthInfo stemsInfo = collectStemsGrowthInfo();
+
+        return TreeGrowthInfo.builder()
+                .age(age)
+                .rootsInfo(rootsInfo)
+                .stemsInfo(stemsInfo)
+                .build();
+    }
+
+    private TreePartGrowthInfo collectStemsGrowthInfo() {
+        return mainStem.collectAllGrowthInfo().stream()
+                .filter(StemGrowthInfo.class::isInstance)
+                .reduce(RootGrowthInfo.ZERO, TreePartGrowthInfo::add);
+    }
+
+    private TreePartGrowthInfo collectRootsGrowthInfo() {
+        return mainRoot.collectAllGrowthInfo().stream()
+                .filter(RootGrowthInfo.class::isInstance)
+                .reduce(RootGrowthInfo.ZERO, TreePartGrowthInfo::add);
     }
 
     @Override
-    public TreeGrowthInfo growFor(Period timePeriod) {
+    public void growFor(Period timePeriod) {
         age = increaseAge(timePeriod);
-        TreePartGrowthInfo<Length> rootsGrowthInfo = mainRoot.growFor(timePeriod);
-        TreePartGrowthInfo<Length> stemsGrowthInfo = mainStem.growFor(timePeriod);
 
-        return prepareTreeGrowthInfo(
-                age,
-                rootsGrowthInfo,
-                stemsGrowthInfo
-        );
-    }
-
-    private TreeGrowthInfo prepareTreeGrowthInfo(
-            Age updatedAge,
-            TreePartGrowthInfo<Length> rootsGrowthInfo,
-            TreePartGrowthInfo<Length> stemsGrowthInfo
-    ) {
-        treeGrowthInfo = TreeGrowthInfo.builder()
-                .age(updatedAge)
-                .rootsInfo(rootsGrowthInfo)
-                .stemsInfo(stemsGrowthInfo)
-                .build();
-
-        return treeGrowthInfo;
+        mainRoot.growFor(timePeriod);
+        mainStem.growFor(timePeriod);
     }
 
     private Age increaseAge(Period timePeriod) {

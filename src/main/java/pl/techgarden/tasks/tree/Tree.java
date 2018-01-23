@@ -11,6 +11,6 @@ public interface Tree {
     Name name();
     Location location();
 
-    TreeGrowthInfo growFor(Period timePeriod);
-    TreeGrowthInfo growthInfo();
+    void growFor(Period timePeriod);
+    TreeGrowthInfo collectGrowthInfo();
 }

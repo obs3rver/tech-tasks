@@ -21,4 +21,5 @@ public class Length implements GrowthTrait {
     public double asDouble() {
         return value;
     }
+
 }

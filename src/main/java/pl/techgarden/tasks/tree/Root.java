@@ -1,6 +1,8 @@
 package pl.techgarden.tasks.tree;
 
 import pl.techgarden.tasks.tree.growth.Length;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.RootGrowthInfo;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig;
 
 class Root extends AbstractTreePartNode {
@@ -13,9 +15,13 @@ class Root extends AbstractTreePartNode {
         return new Root(growthConfig);
     }
 
-    @Override
-    void addNewChildPart(TreePartGrowthConfig<Length> growthConfig) {
-        final Root childRoot = new Root(growthConfig);
-        addChildTreePart(childRoot);
+    TreePartGrowthInfo currentGrowthInfo() {
+        return new RootGrowthInfo(length());
     }
+
+    @Override
+    LengthGrowableNodeTreePart createChildTreePart(TreePartGrowthConfig<Length> growthConfig) {
+        return new Root(growthConfig);
+    }
+
 }

@@ -6,10 +6,9 @@ import pl.techgarden.tasks.tree.factory.TreeFactoryProducer
 import pl.techgarden.tasks.tree.growth.Length
 import pl.techgarden.tasks.tree.growth.LengthTreeGrowthConfig
 import pl.techgarden.tasks.tree.growth.TreeGrowthConfig
-import pl.techgarden.tasks.tree.growth.TreeGrowthInfo
 import spock.lang.Specification
 
-import static pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo
+import static pl.techgarden.tasks.tree.growth.TreeGrowthInfo.*
 
 class LeavedTreeSpec extends Specification implements TreeData {
 
@@ -39,11 +38,10 @@ class LeavedTreeSpec extends Specification implements TreeData {
         Tree leavedTree = leavedTreeFactory.createTree(LEAVED_TREE_NAME, LOCATION)
 
         when: 'grow procedure was started for 1 year'
-        TreeGrowthInfo growthInfo = leavedTree.growFor(ONE_YEAR_PERIOD)
+        leavedTree.growFor(ONE_YEAR_PERIOD)
 
         then: 'growth statistics for age should get updated'
-        leavedTree.growthInfo().age == Age.ONE_YEAR
-        growthInfo.age == Age.ONE_YEAR
+        leavedTree.collectGrowthInfo().age == Age.ONE_YEAR
     }
 
     def "LeavedTree should be able to grow its roots"() {
@@ -54,11 +52,10 @@ class LeavedTreeSpec extends Specification implements TreeData {
         Tree leavedTree = leavedTreeFactory.createTree(LEAVED_TREE_NAME, LOCATION)
 
         when: 'grow procedure was started for 1 year'
-        TreeGrowthInfo growthInfo = leavedTree.growFor(ONE_YEAR_PERIOD)
+        leavedTree.growFor(ONE_YEAR_PERIOD)
 
         then: 'growth statistics for roots should get updated'
-        leavedTree.growthInfo().rootsInfo == expectedRootsGrowthInfo()
-        growthInfo.rootsInfo == expectedRootsGrowthInfo()
+        leavedTree.collectGrowthInfo().rootsInfo == expectedRootsGrowthInfo()
     }
 
     def "LeavedTree should be able to grow its stems"() {
@@ -69,24 +66,23 @@ class LeavedTreeSpec extends Specification implements TreeData {
         Tree leavedTree = leavedTreeFactory.createTree(LEAVED_TREE_NAME, LOCATION)
 
         when: 'grow procedure was started for 1 year'
-        TreeGrowthInfo growthInfo = leavedTree.growFor(ONE_YEAR_PERIOD)
+        leavedTree.growFor(ONE_YEAR_PERIOD)
 
         then: 'growth statistics for stems should get updated'
-        leavedTree.growthInfo().stemsInfo == expectedStemsGrowthInfo()
-        growthInfo.stemsInfo == expectedStemsGrowthInfo()
+        leavedTree.collectGrowthInfo().stemsInfo == expectedStemsGrowthInfo()
     }
 
     private static TreePartGrowthInfo expectedRootsGrowthInfo() {
-        TreePartGrowthInfo.builder()
+        RootGrowthInfo.builder()
                 .treePartCounter(2)
-                .traitSum(Length.of(1.0))
+                .value(Length.of(1.0))
                 .build()
     }
 
     private static TreePartGrowthInfo expectedStemsGrowthInfo() {
-        TreePartGrowthInfo.builder()
+        StemGrowthInfo.builder()
                 .treePartCounter(2)
-                .traitSum(Length.of(2.0))
+                .value(Length.of(2.0))
                 .build()
     }
 

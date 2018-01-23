@@ -5,7 +5,6 @@ import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig
 import spock.lang.Specification
 
 import static pl.techgarden.tasks.tree.growth.LengthTreeGrowthConfig.LengthTreePartGrowthConfig
-import static pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo
 
 class RootSpec extends Specification implements TreeData {
 
@@ -17,14 +16,15 @@ class RootSpec extends Specification implements TreeData {
         LengthGrowableTreePart rootsNode = Root.of(rootsGrowthConfig)
 
         when: 'grow process was requested for 1 year period'
-        TreePartGrowthInfo<Length> rootsGrowthInfo = rootsNode.growFor(ONE_YEAR_PERIOD)
+        rootsNode.growFor(ONE_YEAR_PERIOD)
+        def growthInfo = rootsNode.collectSummaryGrowthInfo()
 
-        then: 'two roots were grown with summary length of 1m'
-        rootsGrowthInfo.treePartCounter() == 2
-        rootsGrowthInfo.traitSum() == Length.of(1.0)
+        then: '2 roots were grown'
+        growthInfo.treePartCounter() == 2
+        growthInfo.value() == Length.of(1.0)
     }
 
-    def "Roots node should grow 3 roots after 2 years with 1 level of depth"() {
+    def "Roots node should grow 5 roots after 2 years with 1 level of depth"() {
         given: 'Root node growth config'
         TreePartGrowthConfig<Length> rootsGrowthConfig = aRootsNodeGrowthConfig()
 
@@ -32,17 +32,19 @@ class RootSpec extends Specification implements TreeData {
         LengthGrowableTreePart rootsNode = Root.of(rootsGrowthConfig)
 
         when: 'grow process was requested for 1 year period'
-        TreePartGrowthInfo<Length> rootsGrowthInfo = rootsNode.growFor(TWO_YEARS_PERIOD)
+        rootsNode.growFor(TWO_YEARS_PERIOD)
+        def growthInfo = rootsNode.collectSummaryGrowthInfo()
 
-        then: '3 roots were grown with summary length of 4m'
-        rootsGrowthInfo.treePartCounter() == 3
-        rootsGrowthInfo.traitSum() == Length.of(4.0)
+        then: '3 roots were grown'
+        growthInfo.treePartCounter() == 3
+        growthInfo.value() == Length.of(2.5)
     }
 
     private TreePartGrowthConfig<Length> aRootsNodeGrowthConfig() {
         LengthTreePartGrowthConfig.builder()
                 .increaseCountOfTreePartBy(1)
                 .increaseCountOfTreePartEvery(ONE_YEAR_PERIOD)
+                .chooseIdenticalTypeOfNewChildTreePart(true)
                 .depthCount(1)
                 .growthStrategy { it + Length.of(0.5) }
                 .build()

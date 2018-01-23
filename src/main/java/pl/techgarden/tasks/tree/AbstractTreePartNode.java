@@ -1,21 +1,24 @@
 package pl.techgarden.tasks.tree;
 
+import lombok.val;
 import pl.techgarden.tasks.tree.domain.Age.Period;
 import pl.techgarden.tasks.tree.growth.Length;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig;
 import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig.GrowingStrategy;
 import pl.techgarden.tasks.utils.CollectionUtils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toList;
 import static pl.techgarden.tasks.tree.growth.Length.ZERO;
 
 abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
     private final Set<LengthGrowableNodeTreePart> childTreeParts;
     private final TreePartGrowthConfig<Length> growthConfig;
-
-    private TreePartGrowthInfo<Length> growthInfo = new TreePartGrowthInfo<>(ZERO);
 
     private Length length = ZERO;
 
@@ -24,37 +27,55 @@ abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
         childTreeParts = CollectionUtils.emptyMutableHashSet();
     }
 
-    void addChildTreePart(LengthGrowableNodeTreePart child) {
-        childTreeParts.add(child);
-    }
-
     @Override
     public Length length() {
         return length;
     }
 
     @Override
-    public TreePartGrowthInfo<Length> growFor(Period timePeriod) {
-        return growInnerTreePartsFor(timePeriod, growthConfig.depthCount());
+    public void growFor(Period timePeriod) {
+        int seasonIterations = determineNumberOfIterationsFor(timePeriod, growthConfig.increaseCountOfTreePartEvery());
+
+        for (int i = 0; i < seasonIterations; i++) {
+            growInnerTreePartsFor(timePeriod, growthConfig.depthCount());
+        }
     }
 
     @Override
-    public TreePartGrowthInfo<Length> growInnerTreePartsFor(Period timePeriod, int depthLevelEachIteration) {
-        int iterations = determineNumberOfIterationsFor(timePeriod, growthConfig.increaseCountOfTreePartEvery());
+    public void growInnerTreePartsFor(Period timePeriod, int depthLevelEachIteration) {
+        length = growLengthOfThisTreePart();
 
-        for (int i = 0; i < iterations; i++) {
-            length = growLengthOfThisTreePart();
-
-            if (isAllowedToGrowChildParts(depthLevelEachIteration)) {
-                addNewChildParts();
-                int nextDepthLevel = depthLevelEachIteration - 1;
-                growChildrenParts(timePeriod, nextDepthLevel);
-            }
+        if (isAllowedToGrowChildParts(depthLevelEachIteration)) {
+            addNewChildParts();
+            growChildrenParts(timePeriod, --depthLevelEachIteration);
         }
+    }
 
-        updateGrowthInfo();
+    @Override
+    public TreePartGrowthInfo growthInfo() {
+        return currentGrowthInfo();
+    }
 
-        return growthInfo;
+    @Override
+    public List<TreePartGrowthInfo> collectAllGrowthInfo() {
+        val growthList = collectGrowthInfoFromChildren();
+        growthList.add(currentGrowthInfo());
+        return Collections.unmodifiableList(growthList);
+    }
+
+    TreePartGrowthInfo collectSummaryGrowthInfo() {
+        return collectAllGrowthInfo().stream()
+                .reduce(TreeGrowthInfo.RootGrowthInfo.ZERO, TreePartGrowthInfo::add);
+    }
+
+    abstract TreePartGrowthInfo currentGrowthInfo();
+
+    abstract LengthGrowableNodeTreePart createChildTreePart(TreePartGrowthConfig<Length> growthConfig);
+
+    private List<TreePartGrowthInfo> collectGrowthInfoFromChildren() {
+        return childTreeParts.stream()
+                .map(LengthGrowableTreePart::growthInfo)
+                .collect(toList());
     }
 
     private int determineNumberOfIterationsFor(Period passedPeriod, Period expectedPeriod) {
@@ -71,21 +92,13 @@ abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
         return growingStrategy().grow(length);
     }
 
-    private void updateGrowthInfo() {
-        growthInfo.clear();
-        growthInfo.add(length);
-        updateGrowthIntoForEveryChildPart();
-    }
-
-    private void updateGrowthIntoForEveryChildPart() {
-        childTreeParts.stream()
-                .map(LengthGrowableNodeTreePart::length)
-                .forEach(growthInfo::add);
-    }
-
     private void addNewChildParts() {
         for (int i = 0; i < growthConfig.increaseCountOfTreePartBy(); i++)
-            addNewChildPart(growthConfig);
+            addChildTreePart(createChildTreePart(growthConfig));
+    }
+
+    private void addChildTreePart(LengthGrowableNodeTreePart child) {
+        childTreeParts.add(child);
     }
 
     private void growChildrenParts(Period timePeriod, int depthLevel) {
@@ -96,8 +109,6 @@ abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
                 )
         );
     }
-
-    abstract void addNewChildPart(TreePartGrowthConfig<Length> growthConfig);
 
     private GrowingStrategy<Length> growingStrategy() {
         return growthConfig.growthStrategy();

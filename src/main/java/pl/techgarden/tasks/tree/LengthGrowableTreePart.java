@@ -6,5 +6,6 @@ import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 
 interface LengthGrowableTreePart extends GrowableTreePart {
     Length length();
-    TreePartGrowthInfo<Length> growFor(Period timePeriod);
+    void growFor(Period timePeriod);
+    TreePartGrowthInfo growthInfo();
 }

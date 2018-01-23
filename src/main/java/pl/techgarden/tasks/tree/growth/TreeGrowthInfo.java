@@ -1,5 +1,6 @@
 package pl.techgarden.tasks.tree.growth;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,45 +16,79 @@ import static pl.techgarden.tasks.tree.domain.Age.ZERO;
 public class TreeGrowthInfo {
     Age age;
 
-    TreePartGrowthInfo<Length> rootsInfo;
-    TreePartGrowthInfo<Length> stemsInfo;
+    TreePartGrowthInfo rootsInfo;
+    TreePartGrowthInfo stemsInfo;
 
     public static TreeGrowthInfo EMPTY =
             TreeGrowthInfo.builder()
                     .age(ZERO)
-                    .rootsInfo(new TreePartGrowthInfo<>(Length.ZERO))
+                    .rootsInfo(RootGrowthInfo.ZERO)
+                    .stemsInfo(StemGrowthInfo.ZERO)
                     .build();
 
     @ToString
     @Getter
     @Accessors(fluent = true)
-    @EqualsAndHashCode(exclude = {"initialTrait"})
-    public static class TreePartGrowthInfo<T extends GrowthTrait> {
-        private long treePartCounter = 0;
-        private T traitSum;
-        private T initialTrait;
+    @EqualsAndHashCode
+    @AllArgsConstructor
+    public static abstract class TreePartGrowthInfo {
+        protected long treePartCounter = 0;
+        protected GrowthTrait value;
 
-        public TreePartGrowthInfo(T initialTrait) {
-            this.traitSum = initialTrait;
-            this.initialTrait = initialTrait;
+        public TreePartGrowthInfo(GrowthTrait value) {
+            this.value = value;
+        }
+
+        public abstract TreePartGrowthInfo add(TreePartGrowthInfo other);
+    }
+
+    public static class RootGrowthInfo extends TreePartGrowthInfo {
+        public static final RootGrowthInfo ZERO = new RootGrowthInfo(0, Length.ZERO);
+
+        public RootGrowthInfo(GrowthTrait value) {
+            super(1, value);
         }
 
         @Builder
-        TreePartGrowthInfo(long treePartCounter, T traitSum) {
-            this.treePartCounter = treePartCounter;
-            this.traitSum = traitSum;
+        public RootGrowthInfo(long treePartCounter, GrowthTrait value) {
+            super(treePartCounter, value);
         }
 
-        @SuppressWarnings("unchecked")
-        public TreePartGrowthInfo add(T trait) {
-            treePartCounter++;
-            traitSum = (T) traitSum.plus(trait);
-            return this;
+        public TreePartGrowthInfo add(TreePartGrowthInfo other) {
+            return new RootGrowthInfo(
+                    treePartCounter + other.treePartCounter,
+                    value.plus(other.value)
+            );
         }
 
-        public void clear() {
-            treePartCounter = 0;
-            traitSum = initialTrait;
+        @Override
+        public String toString() {
+            return "RootGrowthInfo " + super.toString();
+        }
+    }
+
+    public static class StemGrowthInfo extends TreePartGrowthInfo {
+        public static final StemGrowthInfo ZERO = new StemGrowthInfo(0, Length.ZERO);
+
+        public StemGrowthInfo(GrowthTrait value) {
+            super(1, value);
+        }
+
+        @Builder
+        public StemGrowthInfo(long treePartCounter, GrowthTrait value) {
+            super(treePartCounter, value);
+        }
+
+        public TreePartGrowthInfo add(TreePartGrowthInfo other) {
+            return new StemGrowthInfo(
+                    treePartCounter + other.treePartCounter,
+                    value.plus(other.value)
+            );
+        }
+
+        @Override
+        public String toString() {
+            return "StemGrowthInfo " + super.toString();
         }
     }
 }

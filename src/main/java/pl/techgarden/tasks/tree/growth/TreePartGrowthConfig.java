@@ -7,6 +7,7 @@ public interface TreePartGrowthConfig<T extends GrowthTrait> {
     int increaseCountOfTreePartBy();
     int depthCount();
     Period increaseCountOfTreePartEvery();
+    boolean chooseIdenticalTypeOfNewChildTreePart();
 
     @FunctionalInterface
     interface GrowingStrategy<T extends GrowthTrait> {

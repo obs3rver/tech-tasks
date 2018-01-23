@@ -1,6 +1,8 @@
 package pl.techgarden.tasks.tree;
 
 import pl.techgarden.tasks.tree.growth.Length;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.StemGrowthInfo;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig;
 
 class Stem extends AbstractTreePartNode {
@@ -12,9 +14,16 @@ class Stem extends AbstractTreePartNode {
         return new Stem(growthConfig);
     }
 
-    @Override
-    void addNewChildPart(TreePartGrowthConfig<Length> growthConfig) {
-        final Stem childStem = Stem.of(growthConfig);
-        addChildTreePart(childStem);
+    TreePartGrowthInfo currentGrowthInfo() {
+        return new StemGrowthInfo(length());
     }
+
+    @Override
+    LengthGrowableNodeTreePart createChildTreePart(TreePartGrowthConfig<Length> growthConfig) {
+        if (growthConfig.chooseIdenticalTypeOfNewChildTreePart())
+            return Stem.of(growthConfig);
+
+        throw new UnsupportedOperationException();
+    }
+
 }

@@ -29,21 +29,23 @@ public class LeavedTreeFactory implements TreeFactory {
                 .build();
     }
 
-    private static TreePartGrowthConfig<Length> aMainStemNodeGrowthConfig() {
-        return LengthTreeGrowthConfig.LengthTreePartGrowthConfig.builder()
-                .increaseCountOfTreePartBy(1)
-                .increaseCountOfTreePartEvery(ONE_YEAR_PERIOD)
-                .depthCount(1)
-                .growthStrategy(length -> length.plus(Length.of(1.0)))
-                .build();
-    }
-
     private static TreePartGrowthConfig<Length> aMainRootNodeGrowthConfig() {
         return LengthTreeGrowthConfig.LengthTreePartGrowthConfig.builder()
                 .increaseCountOfTreePartBy(1)
                 .increaseCountOfTreePartEvery(ONE_YEAR_PERIOD)
+                .chooseIdenticalTypeOfNewChildTreePart(true)
                 .depthCount(1)
                 .growthStrategy(length -> length.plus(Length.of(0.5)))
+                .build();
+    }
+
+    private static TreePartGrowthConfig<Length> aMainStemNodeGrowthConfig() {
+        return LengthTreeGrowthConfig.LengthTreePartGrowthConfig.builder()
+                .increaseCountOfTreePartBy(1)
+                .increaseCountOfTreePartEvery(ONE_YEAR_PERIOD)
+                .chooseIdenticalTypeOfNewChildTreePart(true)
+                .depthCount(1)
+                .growthStrategy(length -> length.plus(Length.of(1.0)))
                 .build();
     }
 

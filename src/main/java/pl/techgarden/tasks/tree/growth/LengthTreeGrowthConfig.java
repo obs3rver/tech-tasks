@@ -22,5 +22,6 @@ public class LengthTreeGrowthConfig implements TreeGrowthConfig<Length> {
         int increaseCountOfTreePartBy;
         int depthCount;
         Period increaseCountOfTreePartEvery;
+        boolean chooseIdenticalTypeOfNewChildTreePart;
     }
 }
