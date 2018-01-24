@@ -3,6 +3,7 @@ package pl.techgarden.tasks.tree;
 import lombok.val;
 import pl.techgarden.tasks.tree.domain.Age.Period;
 import pl.techgarden.tasks.tree.growth.Length;
+import pl.techgarden.tasks.tree.growth.TreeGrowthConfig;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig;
@@ -18,12 +19,14 @@ import static pl.techgarden.tasks.tree.growth.Length.ZERO;
 
 abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
     private final Set<LengthGrowableNodeTreePart> childTreeParts;
-    private final TreePartGrowthConfig<Length> growthConfig;
+    final TreePartGrowthConfig<Length> growthConfig;
+    final TreeGrowthConfig<Length> treeGrowthConfig;
 
     private Length length = ZERO;
 
-    AbstractTreePartNode(TreePartGrowthConfig<Length> growthConfig) {
-        this.growthConfig = growthConfig;
+    AbstractTreePartNode(TreeGrowthConfig<Length> treeGrowthConfig) {
+        this.treeGrowthConfig = treeGrowthConfig;
+        this.growthConfig = determineGrowthConfigType();
         childTreeParts = CollectionUtils.emptyMutableHashSet();
     }
 
@@ -70,7 +73,9 @@ abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
 
     abstract TreePartGrowthInfo currentGrowthInfo();
 
-    abstract LengthGrowableNodeTreePart createChildTreePart(TreePartGrowthConfig<Length> growthConfig);
+    abstract LengthGrowableNodeTreePart createChildTreePart(TreeGrowthConfig<Length> treeGrowthConfig);
+
+    abstract TreePartGrowthConfig<Length> determineGrowthConfigType();
 
     private List<TreePartGrowthInfo> collectGrowthInfoFromChildren() {
         return childTreeParts.stream()
@@ -94,7 +99,7 @@ abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
 
     private void addNewChildParts() {
         for (int i = 0; i < growthConfig.increaseCountOfTreePartBy(); i++)
-            addChildTreePart(createChildTreePart(growthConfig));
+            addChildTreePart(createChildTreePart(treeGrowthConfig));
     }
 
     private void addChildTreePart(LengthGrowableNodeTreePart child) {

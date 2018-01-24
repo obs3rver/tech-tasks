@@ -18,12 +18,14 @@ public class TreeGrowthInfo {
 
     TreePartGrowthInfo rootsInfo;
     TreePartGrowthInfo stemsInfo;
+    TreePartGrowthInfo branchesInfo;
 
     public static TreeGrowthInfo EMPTY =
             TreeGrowthInfo.builder()
                     .age(ZERO)
                     .rootsInfo(RootGrowthInfo.ZERO)
                     .stemsInfo(StemGrowthInfo.ZERO)
+                    .branchesInfo(BranchGrowthInfo.ZERO)
                     .build();
 
     @ToString
@@ -89,6 +91,31 @@ public class TreeGrowthInfo {
         @Override
         public String toString() {
             return "StemGrowthInfo " + super.toString();
+        }
+    }
+
+    public static class BranchGrowthInfo extends TreePartGrowthInfo {
+        public static final BranchGrowthInfo ZERO = new BranchGrowthInfo(0, Length.ZERO);
+
+        public BranchGrowthInfo(GrowthTrait value) {
+            super(1, value);
+        }
+
+        @Builder
+        public BranchGrowthInfo(long treePartCounter, GrowthTrait value) {
+            super(treePartCounter, value);
+        }
+
+        public TreePartGrowthInfo add(TreePartGrowthInfo other) {
+            return new BranchGrowthInfo(
+                    treePartCounter + other.treePartCounter,
+                    value.plus(other.value)
+            );
+        }
+
+        @Override
+        public String toString() {
+            return "BranchGrowthInfo " + super.toString();
         }
     }
 }

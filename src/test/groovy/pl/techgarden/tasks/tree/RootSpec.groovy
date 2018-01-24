@@ -1,7 +1,7 @@
 package pl.techgarden.tasks.tree
 
 import pl.techgarden.tasks.tree.growth.Length
-import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig
+import pl.techgarden.tasks.tree.growth.TreeGrowthConfig
 import spock.lang.Specification
 
 import static pl.techgarden.tasks.tree.growth.LengthTreeGrowthConfig.LengthTreePartGrowthConfig
@@ -9,8 +9,8 @@ import static pl.techgarden.tasks.tree.growth.LengthTreeGrowthConfig.LengthTreeP
 class RootSpec extends Specification implements TreeData {
 
     def "Roots node should grow 2 roots after 1 year with 1 level of depth update"() {
-        given: 'Root node growth config'
-        TreePartGrowthConfig<Length> rootsGrowthConfig = aRootsNodeGrowthConfig()
+        given: 'Roots node growth config'
+        TreeGrowthConfig<Length> rootsGrowthConfig = aRootsNodeGrowthConfig()
 
         and: 'Root node'
         LengthGrowableTreePart rootsNode = Root.of(rootsGrowthConfig)
@@ -25,8 +25,8 @@ class RootSpec extends Specification implements TreeData {
     }
 
     def "Roots node should grow 5 roots after 2 years with 1 level of depth"() {
-        given: 'Root node growth config'
-        TreePartGrowthConfig<Length> rootsGrowthConfig = aRootsNodeGrowthConfig()
+        given: 'Roots node growth config'
+        TreeGrowthConfig<Length> rootsGrowthConfig = aRootsNodeGrowthConfig()
 
         and: 'Root node'
         LengthGrowableTreePart rootsNode = Root.of(rootsGrowthConfig)
@@ -40,14 +40,17 @@ class RootSpec extends Specification implements TreeData {
         growthInfo.value() == Length.of(2.5)
     }
 
-    private TreePartGrowthConfig<Length> aRootsNodeGrowthConfig() {
-        LengthTreePartGrowthConfig.builder()
-                .increaseCountOfTreePartBy(1)
-                .increaseCountOfTreePartEvery(ONE_YEAR_PERIOD)
-                .chooseIdenticalTypeOfNewChildTreePart(true)
-                .depthCount(1)
-                .growthStrategy { it + Length.of(0.5) }
-                .build()
+    private def aRootsNodeGrowthConfig() {
+        aDefaultLeavedTreeGrowthConfigWith()
+                .rootsGrowthConfig(
+                LengthTreePartGrowthConfig.builder()
+                        .increaseCountOfTreePartBy(1)
+                        .increaseCountOfTreePartEvery(ONE_YEAR_PERIOD)
+                        .chooseIdenticalTypeOfNewChildTreePart(true)
+                        .depthCount(1)
+                        .growthStrategy { it + Length.of(0.5) }
+                        .build()
+        ).build()
     }
 
 }

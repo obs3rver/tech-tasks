@@ -7,6 +7,7 @@ import pl.techgarden.tasks.tree.domain.Name;
 import pl.techgarden.tasks.tree.growth.Length;
 import pl.techgarden.tasks.tree.growth.TreeGrowthConfig;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.BranchGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.RootGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.StemGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
@@ -14,20 +15,18 @@ import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 abstract class AbstractTree implements Tree {
     private final Name name;
     private final Location location;
-    private final TreeGrowthConfig<Length> treeGrowthConfig;
 
     private final Root mainRoot;
     private final Stem mainStem;
 
     private Age age = Age.ZERO;
 
-    AbstractTree(Name name, Location location, TreeGrowthConfig<Length> treeGrowthConfig) {
+    AbstractTree(Name name, Location location, TreeGrowthConfig<Length> gc) {
         this.name = name;
         this.location = location;
-        this.treeGrowthConfig = treeGrowthConfig;
 
-        this.mainRoot = Root.of(treeGrowthConfig.rootsGrowthConfig());
-        this.mainStem = Stem.of(treeGrowthConfig.stemsGrowthConfig());
+        this.mainRoot = Root.of(gc);
+        this.mainStem = Stem.of(gc);
     }
 
     @Override
@@ -49,12 +48,20 @@ abstract class AbstractTree implements Tree {
     public TreeGrowthInfo collectGrowthInfo() {
         final TreePartGrowthInfo rootsInfo = collectRootsGrowthInfo();
         final TreePartGrowthInfo stemsInfo = collectStemsGrowthInfo();
+        final TreePartGrowthInfo branchesInfo = collectBranchesGrowthInfo();
 
         return TreeGrowthInfo.builder()
                 .age(age)
                 .rootsInfo(rootsInfo)
                 .stemsInfo(stemsInfo)
+                .branchesInfo(branchesInfo)
                 .build();
+    }
+
+    private TreePartGrowthInfo collectBranchesGrowthInfo() {
+        return mainStem.collectAllGrowthInfo().stream()
+                .filter(BranchGrowthInfo.class::isInstance)
+                .reduce(BranchGrowthInfo.ZERO, TreePartGrowthInfo::add);
     }
 
     private TreePartGrowthInfo collectStemsGrowthInfo() {

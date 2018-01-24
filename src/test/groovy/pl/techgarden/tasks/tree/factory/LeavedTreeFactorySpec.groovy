@@ -13,7 +13,7 @@ class LeavedTreeFactorySpec extends Specification implements TreeData {
         TreeFactory leavedTreeFactory = TreeFactoryProducer.leavedTreeFactory()
 
         when: 'a new tree instance was requested'
-        Tree leavedTree = leavedTreeFactory.createTree(LEAVED_TREE_NAME, LOCATION)
+        Tree leavedTree = aDefaultLeavedTree(leavedTreeFactory)
 
         then:
         leavedTree != null
@@ -23,5 +23,13 @@ class LeavedTreeFactorySpec extends Specification implements TreeData {
             name() == LEAVED_TREE_NAME
             location() == LOCATION
         }
+    }
+
+    private Tree aDefaultLeavedTree(TreeFactory leavedTreeFactory) {
+        leavedTreeFactory.createTree(
+                LEAVED_TREE_NAME,
+                LOCATION,
+                aDefaultLeavedTreeGrowthConfig()
+        )
     }
 }

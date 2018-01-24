@@ -6,30 +6,30 @@ import spock.lang.Specification
 
 import static pl.techgarden.tasks.tree.growth.LengthTreeGrowthConfig.LengthTreePartGrowthConfig
 
-class StemSpec extends Specification implements TreeData {
+class BranchSpec extends Specification implements TreeData {
 
-    def "Stem node should increase length after one season"() {
-        given: 'Stem node growth config'
-        TreeGrowthConfig<Length> stemsGrowthConfig = aStemsNodeGrowthConfigWithoutChildCreation()
+    def "Branch node should increase length after one season"() {
+        given: 'Branch node growth config'
+        TreeGrowthConfig<Length> stemsGrowthConfig = aBranchNodeGrowthConfigWithoutChildCreation()
 
-        and: 'Stem node'
-        LengthGrowableTreePart stemsNode = Stem.of(stemsGrowthConfig)
+        and: 'Branch node'
+        LengthGrowableTreePart stemsNode = Branch.of(stemsGrowthConfig)
 
         when: 'grow process was requested for 1 year period'
         stemsNode.growFor(ONE_YEAR_PERIOD)
 
-        then: 'summary length should equal 1m'
+        then: 'summary length should equal 0.5m'
         def growthInfo = stemsNode.collectSummaryGrowthInfo()
         growthInfo.treePartCounter() == 1
-        growthInfo.value() == Length.of(1.0)
+        growthInfo.value() == Length.of(0.5)
     }
 
-    def "Stem node should grow a new stem after one season"() {
-        given: 'Stem node growth config'
-        TreeGrowthConfig<Length> stemsGrowthConfig = aStemsNodeGrowthConfigWithChildCreation()
+    def "Branch node should grow a new stem after one season"() {
+        given: 'Branch node growth config'
+        TreeGrowthConfig<Length> stemsGrowthConfig = aBranchNodeGrowthConfigWithChildCreation()
 
-        and: 'Stem node'
-        LengthGrowableTreePart stemsNode = Stem.of(stemsGrowthConfig)
+        and: 'Branch node'
+        LengthGrowableTreePart stemsNode = Branch.of(stemsGrowthConfig)
 
         when: 'grow process was requested for 1 year period'
         stemsNode.growFor(ONE_YEAR_PERIOD)
@@ -37,15 +37,15 @@ class StemSpec extends Specification implements TreeData {
 
         then: 'there are 2 stems now'
         growthInfo.treePartCounter() == 2
-        growthInfo.value() == Length.of(2.0)
+        growthInfo.value() == Length.of(1.0)
     }
 
-    def "Stem node should grow 2 new stems after two seasons"() {
-        given: 'Stem node growth config'
-        TreeGrowthConfig<Length> stemsGrowthConfig = aStemsNodeGrowthConfigWithChildCreation()
+    def "Branch node should grow 2 new stems after two seasons"() {
+        given: 'Branch node growth config'
+        TreeGrowthConfig<Length> stemsGrowthConfig = aBranchNodeGrowthConfigWithChildCreation()
 
-        and: 'Stem node'
-        LengthGrowableTreePart stemsNode = Stem.of(stemsGrowthConfig)
+        and: 'Branch node'
+        LengthGrowableTreePart stemsNode = Branch.of(stemsGrowthConfig)
 
         when: 'grow process was requested for 1 year period'
         stemsNode.growFor(TWO_YEARS_PERIOD)
@@ -53,31 +53,31 @@ class StemSpec extends Specification implements TreeData {
 
         then: 'there are 3 stems now'
         growthInfo.treePartCounter() == 3
-        growthInfo.value() == Length.of(5.0)
+        growthInfo.value() == Length.of(2.5)
     }
 
-    private def aStemsNodeGrowthConfigWithoutChildCreation() {
+    private def aBranchNodeGrowthConfigWithoutChildCreation() {
         aDefaultLeavedTreeGrowthConfigWith()
-                .stemsGrowthConfig(
+                .branchesGrowthConfig(
                 LengthTreePartGrowthConfig.builder()
                         .increaseCountOfTreePartBy(0)
                         .increaseCountOfTreePartEvery(ONE_YEAR_PERIOD)
                         .chooseIdenticalTypeOfNewChildTreePart(true)
                         .depthCount(0)
-                        .growthStrategy { it + Length.of(1.0) }
+                        .growthStrategy { it + Length.of(0.5) }
                         .build()
         ).build()
     }
 
-    private def aStemsNodeGrowthConfigWithChildCreation() {
+    private def aBranchNodeGrowthConfigWithChildCreation() {
         aDefaultLeavedTreeGrowthConfigWith()
-                .stemsGrowthConfig(
+                .branchesGrowthConfig(
                 LengthTreePartGrowthConfig.builder()
                         .increaseCountOfTreePartBy(1)
                         .increaseCountOfTreePartEvery(ONE_YEAR_PERIOD)
                         .chooseIdenticalTypeOfNewChildTreePart(true)
                         .depthCount(1)
-                        .growthStrategy { it + Length.of(1.0) }
+                        .growthStrategy { it + Length.of(0.5) }
                         .build()
         ).build()
     }
