@@ -10,7 +10,11 @@ trait GeolocationData {
                 .build()
     }
 
-    static Geolocation.GeolocationDto aSampleLocationDto() {
+    static Geolocation.Dto aSampleLocationDto() {
         aSampleLocation().toDto()
+    }
+
+    static Geolocation.Dto anInvalidSampleLocationDto() {
+        Geolocation.Dto.builder().build()
     }
 }

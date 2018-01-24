@@ -15,7 +15,7 @@ class SaveGeolocationUseCaseSpec extends Specification implements GeolocationDat
 
     def "should store location data in repository"() {
         given:
-        Geolocation.GeolocationDto locationDto = aSampleLocationDto()
+        Geolocation.Dto locationDto = aSampleLocationDto()
 
         when:
         Geolocation location = saveGeolocationUseCase.saveGeolocation(locationDto)

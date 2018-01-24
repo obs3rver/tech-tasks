@@ -1,49 +1,54 @@
 package pl.techgarden.tasks.geolocation;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
+import lombok.experimental.Wither;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
+
 @Document(collection = "locations")
-@Data
-@Setter(AccessLevel.NONE)
+@Value
+@Wither
 @Builder
 public class Geolocation {
     @Id
-    private String id;
-    private String subject;
-    private GeoJsonPoint location;
+    String id;
+    String subject;
+    GeoJsonPoint location;
 
-    static Geolocation fromDto(final GeolocationDto dto) {
+    static Geolocation fromDto(final Dto dto) {
         return Geolocation.builder()
                 .subject(dto.subject)
                 .location(
                         new GeoJsonPoint(
-                                Double.valueOf(dto.longitude),
-                                Double.valueOf(dto.latitude)
+                                dto.longitude,
+                                dto.latitude
                         ))
                 .build();
     }
 
-    GeolocationDto toDto() {
-        return new GeolocationDto(
-                String.valueOf(location.getX()),
-                String.valueOf(location.getY()),
-                subject
-        );
+    Dto toDto() {
+        return Dto.builder()
+                .longitude(location.getX())
+                .latitude(location.getY())
+                .subject(subject)
+                .build();
     }
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static class GeolocationDto {
-        String longitude;
-        String latitude;
+    @Value
+    @Builder
+    public static class Dto {
+        @NotNull
+        Double longitude;
+
+        @NotNull
+        Double latitude;
+
+        @NotBlank
         String subject;
     }
 }
