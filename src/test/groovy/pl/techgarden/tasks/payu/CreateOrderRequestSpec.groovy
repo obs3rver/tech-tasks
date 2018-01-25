@@ -1,5 +1,6 @@
-package pl.techgarden.tasks.payu.request
+package pl.techgarden.tasks.payu
 
+import pl.techgarden.tasks.payu.CreateOrderRequest
 import pl.techgarden.tasks.payu.PayuData
 import spock.lang.Shared
 import spock.lang.Specification

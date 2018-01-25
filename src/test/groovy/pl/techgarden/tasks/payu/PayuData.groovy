@@ -1,11 +1,10 @@
 package pl.techgarden.tasks.payu
 
-import pl.techgarden.tasks.payu.request.CreateOrderRequest
-import pl.techgarden.tasks.payu.request.CreateOrderRequest.Product
+import pl.techgarden.tasks.payu.CreateOrderRequest.Product
 
 import static java.util.Arrays.asList
 import static java.util.Collections.unmodifiableList
-import static pl.techgarden.tasks.payu.request.CreateOrderRequest.builder
+import static CreateOrderRequest.builder
 
 trait PayuData {
     static CreateOrderRequest anInValidCreateOrderRequest() {

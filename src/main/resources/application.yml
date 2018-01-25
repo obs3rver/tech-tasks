@@ -6,7 +6,6 @@ payu.createOrder:
   url: https://secure.payu.com/api/v2_1/orders
 
 feign.hystrix.enabled: false
-feign.client.default.retryer: NEVER
 
 security:
   oauth2:

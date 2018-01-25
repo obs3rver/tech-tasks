@@ -1,12 +1,12 @@
 package pl.techgarden.tasks.payu;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Component;
-import pl.techgarden.tasks.payu.request.CreateOrderRequest;
-import pl.techgarden.tasks.payu.response.CreateOrderResponse;
 
+import java.util.Optional;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -20,15 +20,23 @@ public class PayuCreateOrderUseCase {
     private final PayuCreateOrderClient payuCreateOrderClient;
     private final Validator validator;
 
-    public CreateOrderResponse createOrder(final CreateOrderRequest request) {
-        val violations = validator.validate(request);
+    public Optional<CreateOrderResponse> createOrder(final CreateOrderRequest request) {
+        val requestViolations = validator.validate(request);
 
-        if (thereAreNo(violations)) {
-            log.debug("Sending {}", request);
-            return payuCreateOrderClient.createOrder(request);
+        if (thereAreNo(requestViolations)) {
+            CreateOrderResponse response = null;
+            
+            try {
+                log.debug("Sending {}", request);
+                response = payuCreateOrderClient.createOrder(request);
+            } catch (FeignException fe) {
+                log.error(fe.getMessage());
+            }
+
+            return Optional.ofNullable(response);
         }
 
-        throw new InvalidRequestArgumentException(withMessageFrom(violations));
+        throw new InvalidRequestArgumentException(withMessageFrom(requestViolations));
     }
 
     private boolean thereAreNo(final Set<ConstraintViolation<CreateOrderRequest>> violations) {

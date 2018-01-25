@@ -1,4 +1,4 @@
-package pl.techgarden.tasks.payu.request;
+package pl.techgarden.tasks.payu;
 
 import lombok.Builder;
 import lombok.Getter;
