@@ -1,0 +1,6 @@
+
+spring:
+logging:
+  level:
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+    pl.techgarden.tasks: DEBUG
