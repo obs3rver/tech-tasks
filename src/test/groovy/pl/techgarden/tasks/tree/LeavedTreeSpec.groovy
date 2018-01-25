@@ -11,7 +11,7 @@ import static pl.techgarden.tasks.tree.domain.Age.ONE_YEAR
 import static pl.techgarden.tasks.tree.factory.TreeFactoryProducer.leavedTreeFactory
 import static pl.techgarden.tasks.tree.growth.TreeGrowthInfo.*
 
-class LeavedTreeSpec extends Specification implements TreeData {
+class LeavedTreeSpec extends Specification implements LeavedTreeData {
 
     def "tree builder should create LeavedTree object"() {
         when:
@@ -127,7 +127,7 @@ class LeavedTreeSpec extends Specification implements TreeData {
                 aDefaultLeavedTreeGrowthConfigWith()
                         .stemsGrowthConfig(aStemNodeGrowthConfigWithCreationOfOtherTypesAndIncreasedDepth())
                         .branchesGrowthConfig(aBranchNodeGrowthConfigWithCreationOfOtherTypes())
-                        .leavesGrowthConfig(aLeafGrowthConfig())
+                        .leavesGrowthConfig(aLeavedTreeLeafGrowthConfig())
                         .build()
         )
     }

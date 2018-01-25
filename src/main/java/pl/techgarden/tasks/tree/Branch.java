@@ -33,7 +33,7 @@ class Branch extends AbstractTreePartNode {
             val leavesGrowthConfig = treeGrowthConfig.leavesGrowthConfig();
 
             if (leavesGrowthConfig.isNeedle()) {
-                throw new UnsupportedOperationException();
+                return NeedleLeaf.of(leavesGrowthConfig);
             } else {
                 return Leaf.of(leavesGrowthConfig);
             }

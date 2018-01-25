@@ -1,12 +1,12 @@
 package pl.techgarden.tasks.tree.factory
 
 import pl.techgarden.tasks.tree.LeavedTree
+import pl.techgarden.tasks.tree.LeavedTreeData
 import pl.techgarden.tasks.tree.Tree
-import pl.techgarden.tasks.tree.TreeData
 import pl.techgarden.tasks.tree.domain.Age
 import spock.lang.Specification
 
-class LeavedTreeFactorySpec extends Specification implements TreeData {
+class LeavedTreeFactorySpec extends Specification implements LeavedTreeData {
 
     def "LeavedTreeFactory should produce leaved tree instance"() {
         given: 'LeavedTreeFactory instance'

@@ -6,7 +6,7 @@ import spock.lang.Specification
 
 import static pl.techgarden.tasks.tree.growth.LengthTreeGrowthConfig.LengthTreePartGrowthConfig
 
-class StemSpec extends Specification implements TreeData {
+class StemSpec extends Specification implements LeavedTreeData {
 
     def "Stem node should increase length after one season"() {
         given: 'Stem node growth config'

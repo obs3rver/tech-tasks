@@ -6,7 +6,7 @@ import spock.lang.Specification
 
 import static pl.techgarden.tasks.tree.growth.LengthTreeGrowthConfig.LengthTreePartGrowthConfig
 
-class RootSpec extends Specification implements TreeData {
+class RootSpec extends Specification implements LeavedTreeData {
 
     def "Roots node should grow 2 roots after 1 year with 1 level of depth update"() {
         given: 'Roots node growth config'

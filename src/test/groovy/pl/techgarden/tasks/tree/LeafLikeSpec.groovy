@@ -4,11 +4,11 @@ import pl.techgarden.tasks.tree.growth.LeafLikeGrowthConfig
 import pl.techgarden.tasks.tree.growth.Length
 import spock.lang.Specification
 
-class LeafSpec extends Specification implements TreeData {
+class LeafLikeSpec extends Specification implements LeavedTreeData {
 
     def "Leaf should increase length after one season"() {
         given: 'Leaf growth config'
-        LeafLikeGrowthConfig<Length> leavesGrowthConfig = aLeafGrowthConfig()
+        LeafLikeGrowthConfig<Length> leavesGrowthConfig = aLeavedTreeLeafGrowthConfig()
 
         and: 'a Leaf instance'
         LengthGrowableTreePart leaf = Leaf.of(leavesGrowthConfig)
