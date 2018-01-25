@@ -3,4 +3,17 @@ spring:
 logging:
   level:
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+    org.springframework.web.client: INFO
     pl.techgarden.tasks: DEBUG
+
+payu.createOrder:
+  url: https://secure.payu.com/api/v2_1/orders
+
+feign.hystrix.enabled: false
+
+security:
+  oauth2:
+    payu:
+      access-token-uri: https://secure.payu.com/pl/standard/user/oauth/authorize
+      client-id: 145227
+      client-secret: 12f071174cb7eb79d4aac5bc2f07563f
