@@ -1,9 +1,10 @@
 package pl.techgarden.tasks.tree;
 
+import lombok.val;
 import pl.techgarden.tasks.tree.growth.Length;
 import pl.techgarden.tasks.tree.growth.TreeGrowthConfig;
-import pl.techgarden.tasks.tree.growth.TreeGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.BranchGrowthInfo;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig;
 
 class Branch extends AbstractTreePartNode {
@@ -20,16 +21,23 @@ class Branch extends AbstractTreePartNode {
         return treeGrowthConfig.branchesGrowthConfig();
     }
 
-    TreeGrowthInfo.TreePartGrowthInfo currentGrowthInfo() {
+    TreePartGrowthInfo currentGrowthInfo() {
         return new BranchGrowthInfo(length());
     }
 
     @Override
-    LengthGrowableNodeTreePart createChildTreePart(TreeGrowthConfig<Length> treeGrowthConfig) {
-        if (growthConfig.chooseIdenticalTypeOfNewChildTreePart())
+    LengthGrowableTreePart createChildTreePart(TreeGrowthConfig<Length> treeGrowthConfig) {
+        if (growthConfig.chooseIdenticalTypeOfNewChildTreePart()) {
             return Branch.of(treeGrowthConfig);
+        } else {
+            val leavesGrowthConfig = treeGrowthConfig.leavesGrowthConfig();
 
-        throw new UnsupportedOperationException();
+            if (leavesGrowthConfig.isNeedle()) {
+                throw new UnsupportedOperationException();
+            } else {
+                return Leaf.of(leavesGrowthConfig);
+            }
+        }
     }
 
 }

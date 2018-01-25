@@ -19,6 +19,7 @@ public class TreeGrowthInfo {
     TreePartGrowthInfo rootsInfo;
     TreePartGrowthInfo stemsInfo;
     TreePartGrowthInfo branchesInfo;
+    TreePartGrowthInfo leavesInfo;
 
     public static TreeGrowthInfo EMPTY =
             TreeGrowthInfo.builder()
@@ -26,6 +27,7 @@ public class TreeGrowthInfo {
                     .rootsInfo(RootGrowthInfo.ZERO)
                     .stemsInfo(StemGrowthInfo.ZERO)
                     .branchesInfo(BranchGrowthInfo.ZERO)
+                    .leavesInfo(LeafLikeGrowthInfo.ZERO)
                     .build();
 
     @ToString
@@ -116,6 +118,31 @@ public class TreeGrowthInfo {
         @Override
         public String toString() {
             return "BranchGrowthInfo " + super.toString();
+        }
+    }
+
+    public static class LeafLikeGrowthInfo extends TreePartGrowthInfo {
+        public static final LeafLikeGrowthInfo ZERO = new LeafLikeGrowthInfo(0, Length.ZERO);
+
+        public LeafLikeGrowthInfo(GrowthTrait value) {
+            super(1, value);
+        }
+
+        @Builder
+        public LeafLikeGrowthInfo(long treePartCounter, GrowthTrait value) {
+            super(treePartCounter, value);
+        }
+
+        public TreePartGrowthInfo add(TreePartGrowthInfo other) {
+            return new LeafLikeGrowthInfo(
+                    treePartCounter + other.treePartCounter,
+                    value.plus(other.value)
+            );
+        }
+
+        @Override
+        public String toString() {
+            return "LeafLikeGrowthInfo " + super.toString();
         }
     }
 }

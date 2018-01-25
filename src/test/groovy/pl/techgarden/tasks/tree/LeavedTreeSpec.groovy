@@ -87,6 +87,21 @@ class LeavedTreeSpec extends Specification implements TreeData {
         leavedTree.collectGrowthInfo().branchesInfo == expectedBranchesGrowthInfo()
     }
 
+    def "LeavedTree should be able to grow its leaves"() {
+        given: 'LeavedTreeFactory instance'
+        TreeFactory leavedTreeFactory = leavedTreeFactory()
+
+        and: 'a leaved tree instance'
+        Tree leavedTree = aLeavedTreeWithLeaves(leavedTreeFactory)
+
+        when: 'grow procedure was started for 1 year'
+        leavedTree.growFor(ONE_YEAR_PERIOD)
+
+        then: 'growth statistics for leaves should get updated'
+        def treeGrowthInfo = leavedTree.collectGrowthInfo()
+        treeGrowthInfo.leavesInfo == expectedLeavesGrowthInfo()
+    }
+
     private Tree aDefaultLeavedTree(TreeFactory leavedTreeFactory) {
         leavedTreeFactory.createTree(
                 LEAVED_TREE_NAME,
@@ -101,6 +116,18 @@ class LeavedTreeSpec extends Specification implements TreeData {
                 LOCATION,
                 aDefaultLeavedTreeGrowthConfigWith()
                         .stemsGrowthConfig(aStemNodeGrowthConfigWithCreationOfOtherTypes())
+                        .build()
+        )
+    }
+
+    private Tree aLeavedTreeWithLeaves(TreeFactory leavedTreeFactory) {
+        leavedTreeFactory.createTree(
+                LEAVED_TREE_NAME,
+                LOCATION,
+                aDefaultLeavedTreeGrowthConfigWith()
+                        .stemsGrowthConfig(aStemNodeGrowthConfigWithCreationOfOtherTypesAndIncreasedDepth())
+                        .branchesGrowthConfig(aBranchNodeGrowthConfigWithCreationOfOtherTypes())
+                        .leavesGrowthConfig(aLeafGrowthConfig())
                         .build()
         )
     }
@@ -123,6 +150,13 @@ class LeavedTreeSpec extends Specification implements TreeData {
         BranchGrowthInfo.builder()
                 .treePartCounter(1)
                 .value(Length.of(0.5))
+                .build()
+    }
+
+    private static expectedLeavesGrowthInfo() {
+        LeafLikeGrowthInfo.builder()
+                .treePartCounter(1)
+                .value(Length.of(0.1))
                 .build()
     }
 

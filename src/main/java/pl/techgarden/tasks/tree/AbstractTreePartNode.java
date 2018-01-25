@@ -4,11 +4,10 @@ import lombok.val;
 import pl.techgarden.tasks.tree.domain.Age.Period;
 import pl.techgarden.tasks.tree.growth.Length;
 import pl.techgarden.tasks.tree.growth.TreeGrowthConfig;
-import pl.techgarden.tasks.tree.growth.TreeGrowthInfo;
+import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.StemGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreeGrowthInfo.TreePartGrowthInfo;
 import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig;
-import pl.techgarden.tasks.tree.growth.TreePartGrowthConfig.GrowingStrategy;
-import pl.techgarden.tasks.utils.CollectionUtils;
+import pl.techgarden.tasks.tree.growth.BasicGrowthConfig.GrowingStrategy;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,9 +15,10 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 import static pl.techgarden.tasks.tree.growth.Length.ZERO;
+import static pl.techgarden.tasks.utils.CollectionUtils.emptyMutableHashSet;
 
 abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
-    private final Set<LengthGrowableNodeTreePart> childTreeParts;
+    private final Set<LengthGrowableTreePart> childTreeParts;
     final TreePartGrowthConfig<Length> growthConfig;
     final TreeGrowthConfig<Length> treeGrowthConfig;
 
@@ -27,7 +27,7 @@ abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
     AbstractTreePartNode(TreeGrowthConfig<Length> treeGrowthConfig) {
         this.treeGrowthConfig = treeGrowthConfig;
         this.growthConfig = determineGrowthConfigType();
-        childTreeParts = CollectionUtils.emptyMutableHashSet();
+        childTreeParts = emptyMutableHashSet();
     }
 
     @Override
@@ -66,20 +66,37 @@ abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
         return Collections.unmodifiableList(growthList);
     }
 
-    TreePartGrowthInfo collectSummaryGrowthInfo() {
+    TreePartGrowthInfo collectAllGrowthInfoSum() {
         return collectAllGrowthInfo().stream()
-                .reduce(TreeGrowthInfo.RootGrowthInfo.ZERO, TreePartGrowthInfo::add);
+                .reduce(StemGrowthInfo.ZERO, TreePartGrowthInfo::add);
     }
 
     abstract TreePartGrowthInfo currentGrowthInfo();
 
-    abstract LengthGrowableNodeTreePart createChildTreePart(TreeGrowthConfig<Length> treeGrowthConfig);
+    abstract LengthGrowableTreePart createChildTreePart(TreeGrowthConfig<Length> treeGrowthConfig);
 
     abstract TreePartGrowthConfig<Length> determineGrowthConfigType();
 
     private List<TreePartGrowthInfo> collectGrowthInfoFromChildren() {
+        val growthInfos = collectGrowthInfosFromNodeChildren();
+        growthInfos.addAll(collectGrowthInfosFromNonNodeChildren());
+
+        return growthInfos;
+    }
+
+    private List<TreePartGrowthInfo> collectGrowthInfosFromNonNodeChildren() {
         return childTreeParts.stream()
+                .filter(obj -> !LengthGrowableNodeTreePart.class.isInstance(obj))
                 .map(LengthGrowableTreePart::growthInfo)
+                .collect(toList());
+    }
+
+    private List<TreePartGrowthInfo> collectGrowthInfosFromNodeChildren() {
+        return childTreeParts.stream()
+                .filter(LengthGrowableNodeTreePart.class::isInstance)
+                .map(LengthGrowableNodeTreePart.class::cast)
+                .map(LengthGrowableNodeTreePart::collectAllGrowthInfo)
+                .flatMap(List::stream)
                 .collect(toList());
     }
 
@@ -102,17 +119,33 @@ abstract class AbstractTreePartNode implements LengthGrowableNodeTreePart {
             addChildTreePart(createChildTreePart(treeGrowthConfig));
     }
 
-    private void addChildTreePart(LengthGrowableNodeTreePart child) {
+    private void addChildTreePart(LengthGrowableTreePart child) {
         childTreeParts.add(child);
     }
 
     private void growChildrenParts(Period timePeriod, int depthLevel) {
-        childTreeParts.forEach(it ->
-                it.growInnerTreePartsFor(
-                        timePeriod,
-                        depthLevel
-                )
-        );
+        growChildrenNodeParts(timePeriod, depthLevel);
+        growChildrenNonNodeParts(timePeriod);
+    }
+
+    private void growChildrenNonNodeParts(Period timePeriod) {
+        childTreeParts.stream()
+                .filter(LeafLike.class::isInstance)
+                .map(LeafLike.class::cast)
+                .forEach(it -> it.growFor(timePeriod)
+                );
+    }
+
+    private void growChildrenNodeParts(Period timePeriod, int depthLevel) {
+        childTreeParts.stream()
+                .filter(LengthGrowableNodeTreePart.class::isInstance)
+                .map(LengthGrowableNodeTreePart.class::cast)
+                .forEach(it ->
+                        it.growInnerTreePartsFor(
+                                timePeriod,
+                                depthLevel
+                        )
+                );
     }
 
     private GrowingStrategy<Length> growingStrategy() {

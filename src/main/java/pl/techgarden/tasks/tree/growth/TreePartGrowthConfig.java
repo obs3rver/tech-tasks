@@ -1,16 +1,7 @@
 package pl.techgarden.tasks.tree.growth;
 
-import pl.techgarden.tasks.tree.domain.Age.Period;
-
-public interface TreePartGrowthConfig<T extends GrowthTrait> {
-    GrowingStrategy<T> growthStrategy();
+public interface TreePartGrowthConfig<T extends GrowthTrait> extends BasicGrowthConfig<T> {
     int increaseCountOfTreePartBy();
     int depthCount();
-    Period increaseCountOfTreePartEvery();
     boolean chooseIdenticalTypeOfNewChildTreePart();
-
-    @FunctionalInterface
-    interface GrowingStrategy<T extends GrowthTrait> {
-        T grow(T growingType);
-    }
 }

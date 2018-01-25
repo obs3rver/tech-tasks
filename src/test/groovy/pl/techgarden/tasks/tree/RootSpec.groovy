@@ -17,7 +17,7 @@ class RootSpec extends Specification implements TreeData {
 
         when: 'grow process was requested for 1 year period'
         rootsNode.growFor(ONE_YEAR_PERIOD)
-        def growthInfo = rootsNode.collectSummaryGrowthInfo()
+        def growthInfo = rootsNode.collectAllGrowthInfoSum()
 
         then: '2 roots were grown'
         growthInfo.treePartCounter() == 2
@@ -33,7 +33,7 @@ class RootSpec extends Specification implements TreeData {
 
         when: 'grow process was requested for 1 year period'
         rootsNode.growFor(TWO_YEARS_PERIOD)
-        def growthInfo = rootsNode.collectSummaryGrowthInfo()
+        def growthInfo = rootsNode.collectAllGrowthInfoSum()
 
         then: '3 roots were grown'
         growthInfo.treePartCounter() == 3

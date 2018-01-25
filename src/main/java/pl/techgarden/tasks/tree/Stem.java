@@ -26,10 +26,11 @@ class Stem extends AbstractTreePartNode {
 
     @Override
     LengthGrowableNodeTreePart createChildTreePart(TreeGrowthConfig<Length> treeGrowthConfig) {
-        if (growthConfig.chooseIdenticalTypeOfNewChildTreePart())
+        if (growthConfig.chooseIdenticalTypeOfNewChildTreePart()) {
             return Stem.of(treeGrowthConfig);
-        else
+        } else {
             return Branch.of(treeGrowthConfig);
+        }
     }
 
 }

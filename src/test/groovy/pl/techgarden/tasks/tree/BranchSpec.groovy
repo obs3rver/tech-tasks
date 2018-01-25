@@ -19,7 +19,7 @@ class BranchSpec extends Specification implements TreeData {
         stemsNode.growFor(ONE_YEAR_PERIOD)
 
         then: 'summary length should equal 0.5m'
-        def growthInfo = stemsNode.collectSummaryGrowthInfo()
+        def growthInfo = stemsNode.collectAllGrowthInfoSum()
         growthInfo.treePartCounter() == 1
         growthInfo.value() == Length.of(0.5)
     }
@@ -33,7 +33,7 @@ class BranchSpec extends Specification implements TreeData {
 
         when: 'grow process was requested for 1 year period'
         stemsNode.growFor(ONE_YEAR_PERIOD)
-        def growthInfo = stemsNode.collectSummaryGrowthInfo()
+        def growthInfo = stemsNode.collectAllGrowthInfoSum()
 
         then: 'there are 2 stems now'
         growthInfo.treePartCounter() == 2
@@ -49,7 +49,7 @@ class BranchSpec extends Specification implements TreeData {
 
         when: 'grow process was requested for 1 year period'
         stemsNode.growFor(TWO_YEARS_PERIOD)
-        def growthInfo = stemsNode.collectSummaryGrowthInfo()
+        def growthInfo = stemsNode.collectAllGrowthInfoSum()
 
         then: 'there are 3 stems now'
         growthInfo.treePartCounter() == 3

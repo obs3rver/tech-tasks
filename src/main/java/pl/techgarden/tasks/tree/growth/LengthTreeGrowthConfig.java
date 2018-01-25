@@ -12,7 +12,7 @@ public class LengthTreeGrowthConfig implements TreeGrowthConfig<Length> {
     TreePartGrowthConfig<Length> rootsGrowthConfig;
     TreePartGrowthConfig<Length> stemsGrowthConfig;
     TreePartGrowthConfig<Length> branchesGrowthConfig;
-    TreePartGrowthConfig<Length> leavesGrowthConfig;
+    LeafLikeGrowthConfig<Length> leavesGrowthConfig;
 
     @Value
     @Accessors(fluent = true)
