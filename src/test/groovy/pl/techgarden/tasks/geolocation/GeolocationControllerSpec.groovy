@@ -30,7 +30,9 @@ class GeolocationControllerSpec extends Specification implements GeolocationData
 
     @Before
     void setupMockMvc() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                .build()
     }
 
     @After
@@ -58,30 +60,53 @@ class GeolocationControllerSpec extends Specification implements GeolocationData
         foundGeolocationOpt.get().toDto() == locationDto
     }
 
-    def "should not post location with invalid data"() {
-        given: 'An invalid geolocation dto'
-        Geolocation.Dto invalidLocationDto = anInvalidSampleLocationDto()
+    def "should not post location with incomplete data"() {
+        given: 'An incomplete geolocation dto'
+        Geolocation.Dto incompleteLocationDto = anIncompleteSampleLocationDto()
 
         when: 'post to locations endpoint'
         ResultActions postGeolocation = mockMvc.perform(
                 post(ENDPOINT)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(invalidLocationDto))
+                        .content(asJsonString(incompleteLocationDto))
         )
 
         then: 'response is 400'
         postGeolocation.andExpect(status().isBadRequest())
-                .andExpect(content().json(expectedErrorMsg()))
+                .andExpect(content().json(expectedErrorMsgForIncompleteData()))
 
         and: 'geolocation object was not saved in repository'
         geolocationRepository.findAll().isEmpty()
     }
 
-    String expectedErrorMsg() {
+    def "should not post location with invalid data"() {
+        given: 'An invalid geolocation dto'
+        String invalidRequestData = "{\"latitude\": \"abc\"}"
+
+        when: 'post to locations endpoint'
+        ResultActions postGeolocation = mockMvc.perform(
+                post(ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequestData)
+        )
+
+        then: 'response is 400'
+        postGeolocation.andExpect(status().isBadRequest())
+                .andExpect(content().json(expectedErrorMsgForInvalidData()))
+
+        and: 'geolocation object was not saved in repository'
+        geolocationRepository.findAll().isEmpty()
+    }
+
+    String expectedErrorMsgForIncompleteData() {
         asJsonString(GeolocationController.ErrorResponse.of([
                 "latitude may not be null",
                 "longitude may not be null",
                 "subject may not be empty"
         ]))
+    }
+
+    String expectedErrorMsgForInvalidData() {
+        asJsonString(GeolocationController.ErrorResponse.of(["Invalid input data"]))
     }
 }

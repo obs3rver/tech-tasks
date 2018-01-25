@@ -14,7 +14,8 @@ trait GeolocationData {
         aSampleLocation().toDto()
     }
 
-    static Geolocation.Dto anInvalidSampleLocationDto() {
+    static Geolocation.Dto anIncompleteSampleLocationDto() {
         Geolocation.Dto.builder().build()
     }
+
 }
