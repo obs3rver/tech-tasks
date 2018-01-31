@@ -19,12 +19,12 @@ import static java.util.stream.Collectors.joining;
 
 @Slf4j
 @Component
-public class PayuCreateOrderUseCase {
+public class PayUClient {
     private final Validator validator;
     private final Decoder decoder;
     private final PayuCreateOrderClient payuCreateOrderClient;
 
-    public PayuCreateOrderUseCase(
+    public PayUClient(
             @NonNull Validator validator,
             @NonNull Decoder decoder,
             @NonNull PayuCreateOrderClient payuCreateOrderClient
@@ -34,7 +34,7 @@ public class PayuCreateOrderUseCase {
         this.payuCreateOrderClient = payuCreateOrderClient;
     }
 
-    public Optional<CreateOrderResponse> createStandardOrder(final CreateOrderRequest request) {
+    public Optional<CreateOrderResponse> createOrder(final CreateOrderRequest request) {
         validateRequestArgument(request);
 
         try {

@@ -5,17 +5,17 @@ import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Specification
 
 @SpringBootTest
-class PayuCreateOrderUseCaseSpec extends Specification implements PayuData {
+class PayUClientSpec extends Specification implements PayuData {
 
     @Autowired
-    private PayuCreateOrderUseCase createOrderUseCase
+    private PayUClient payUClient
 
     def "should not send CreateOrderRequest and throw InvalidRequestArgumentException instead"() {
         given:
         CreateOrderRequest request = aPartiallyInvalidCreateOrderRequestWithoutCustomerIp()
 
         when:
-        createOrderUseCase.createStandardOrder(request)
+        payUClient.createOrder(request)
 
         then:
         thrown(InvalidRequestArgumentException)
@@ -26,7 +26,7 @@ class PayuCreateOrderUseCaseSpec extends Specification implements PayuData {
         CreateOrderRequest request = aValidCreateOrderRequest()
 
         when:
-        def responseOpt = createOrderUseCase.createStandardOrder(request)
+        def responseOpt = payUClient.createOrder(request)
 
         then:
         responseOpt.isPresent()
