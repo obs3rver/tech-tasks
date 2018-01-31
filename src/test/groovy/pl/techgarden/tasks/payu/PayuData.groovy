@@ -4,15 +4,14 @@ import pl.techgarden.tasks.payu.CreateOrderRequest.Product
 
 import static java.util.Arrays.asList
 import static java.util.Collections.unmodifiableList
-import static CreateOrderRequest.builder
 
 trait PayuData {
     static CreateOrderRequest anInValidCreateOrderRequest() {
-        builder().build()
+        CreateOrderRequest.builder().build()
     }
 
     static CreateOrderRequest aPartiallyInvalidCreateOrderRequestWithoutCustomerIp() {
-        builder()
+        CreateOrderRequest.builder()
                 .merchantPosId(145227)
                 .description("RTV market")
                 .currencyCode(CreateOrderRequest.CurrencyCode.PLN)
@@ -30,7 +29,7 @@ trait PayuData {
     }
 
     static CreateOrderRequest aValidCreateOrderRequest() {
-        builder()
+        CreateOrderRequest.builder()
                 .customerIp("127.0.0.1")
                 .merchantPosId(145227)
                 .description("RTV market")

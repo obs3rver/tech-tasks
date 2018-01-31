@@ -2,14 +2,20 @@
 spring:
 logging:
   level:
+    root: INFO
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
-    org.springframework.web.client: INFO
+    org.springframework.web.client: DEBUG
+    feign.Logger: DEBUG
     pl.techgarden.tasks: DEBUG
 
 payu.createOrder:
   url: https://secure.payu.com/api/v2_1/orders
 
-feign.hystrix.enabled: false
+feign:
+  okhttp:
+    enabled: true
+  hystrix:
+    enabled: false
 
 security:
   oauth2:

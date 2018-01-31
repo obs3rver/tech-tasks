@@ -2,7 +2,6 @@ package pl.techgarden.tasks.payu
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import spock.lang.Ignore
 import spock.lang.Specification
 
 @SpringBootTest
@@ -16,23 +15,22 @@ class PayuCreateOrderUseCaseSpec extends Specification implements PayuData {
         CreateOrderRequest request = aPartiallyInvalidCreateOrderRequestWithoutCustomerIp()
 
         when:
-        createOrderUseCase.createOrder(request)
+        createOrderUseCase.createStandardOrder(request)
 
         then:
-        def ex = thrown(InvalidRequestArgumentException)
-        !ex.message.isEmpty()
+        thrown(InvalidRequestArgumentException)
     }
 
-    @Ignore
     def "should send CreateOrderRequest to PayU"() {
         given:
         CreateOrderRequest request = aValidCreateOrderRequest()
 
         when:
-        def responseOpt = createOrderUseCase.createOrder(request)
+        def responseOpt = createOrderUseCase.createStandardOrder(request)
 
         then:
         responseOpt.isPresent()
+        responseOpt.get().status.isOk()
     }
 
 }

@@ -1,9 +1,14 @@
 package pl.techgarden.tasks.payu;
 
+import feign.Client;
 import feign.Logger;
 import feign.RequestInterceptor;
-import feign.Retryer;
+import feign.codec.Decoder;
+import feign.codec.ErrorDecoder;
+import feign.gson.GsonDecoder;
+import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.netflix.feign.support.ResponseEntityDecoder;
 import org.springframework.cloud.security.oauth2.client.feign.OAuth2FeignRequestInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +18,7 @@ import org.springframework.security.oauth2.client.token.grant.client.ClientCrede
 
 @Configuration
 class PayuClientConfiguration {
+
     @Value("${security.oauth2.payu.access-token-uri}")
     private String accessTokenUri;
 
@@ -37,11 +43,27 @@ class PayuClientConfiguration {
 
     @Bean
     Logger.Level feignLoggerLevel() {
-        return Logger.Level.BASIC;
+        return Logger.Level.FULL;
     }
 
     @Bean
-    Retryer retryer() {
-        return Retryer.NEVER_RETRY;
+    Decoder responseEntityDecoder() {
+        return new ResponseEntityDecoder(new GsonDecoder());
     }
+
+    @Bean
+    ErrorDecoder errorDecoder() {
+        return new FeignRedirectionErrorDecoder();
+    }
+
+    @Bean
+    Client okhttpClient() {
+        return new feign.okhttp.OkHttpClient(
+                new OkHttpClient().newBuilder()
+                        .followRedirects(false)
+                        .followSslRedirects(false)
+                        .build()
+        );
+    }
+
 }
