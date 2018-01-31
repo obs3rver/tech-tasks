@@ -11,6 +11,6 @@ Growing strategy is configurable. Code allow to instantiate 2 types of trees: le
 
 Incomplete implementation of CreateOrder PayU API client. Feign used as rest client.
 
-#### Task 3
+#### Geolocation REST API
 
 Geolocation REST service supporting storing of geojson in MongoDB NOSQL database.
